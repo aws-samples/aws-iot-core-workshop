@@ -1,0 +1,39 @@
+# lab2.txt
+#
+# Copyright 2018-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this
+# software and associated documentation files (the "Software"), to deal in the Software
+# without restriction, including without limitation the rights to use, copy, modify,
+# merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+# PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+# prerequisite is to have run lab1.txt instructions first
+
+# From lab1.txt ... don't need to repeat unless coming back into a new terminal window since lab1
+# CHANGE THIS LINE TO YOUR NAME AND FAV COLOR
+THING_NAME=LastNameFavoriteColor
+
+
+# ------------------------------------------
+# LAB 2 - SNS Topic and Subscription
+# ------------------------------------------
+
+# create a new SNS topic
+aws sns create-topic --name ${THING_NAME}-Dashboard-Update | tee sns-topic-create.out
+
+# get the topic ARN
+SNS_ARN=$(jq -r .TopicArn < sns-topic-create.out)
+
+# create a new subscription
+aws sns subscribe --topic-arn $SNS_ARN --protocol https --notification-endpoint https://3kzk220j0j.execute-api.us-west-2.amazonaws.com/default/reinvent-iot-thing
+
+# check your subscription
+aws sns list-subscriptions-by-topic --topic-arn $SNS_ARN

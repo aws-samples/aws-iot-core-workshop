@@ -1,0 +1,129 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy of this
+  software and associated documentation files (the "Software"), to deal in the Software
+  without restriction, including without limitation the rights to use, copy, modify,
+  merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+  permit persons to whom the Software is furnished to do so.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+  AWS CloudFormation Sample Template Cloud9AsIotThing: Create an IoT Thing 
+  with a Cloud9 development environment. This example creates a Cloud 9 EC2 
+  environment and creates an AWS IoT Thing out of it. **WARNING** This template
+  creates an Amazon EC2 instance. You will be billed for the AWS resources used
+  if you create a stack from this template.
+Parameters:
+  ProjectName:
+    Description: Name of project as used as a resource tag
+    Type: String
+    Default: aws-cloud9-iot-core-workshop-aws-summit-nyc-2019
+  AutoHibernateTimeout:
+    Description: How many minutes idle before shutting down the IDE
+    Type: Number
+    Default: 30
+  SubnetIdentifier:
+    Description: SubnetId
+    Type: AWS::EC2::Subnet::Id
+    AllowedPattern: ".+"
+  InstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: t2.small
+    AllowedValues:
+      - t1.micro
+      - t2.nano
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+    ConstraintDescription: must be a valid EC2 instance type.
+  DeviceName:
+    Type: String
+    Description: The name of the IoT Device publishing to the IoT Core to create
+    Default: DemoDevice
+Mappings:
+  Region2Principal:
+    us-east-1:
+      EC2Principal: ec2.amazonaws.com
+      OpsWorksPrincipal: opsworks.amazonaws.com
+    us-west-2:
+      EC2Principal: ec2.amazonaws.com
+      OpsWorksPrincipal: opsworks.amazonaws.com
+    us-west-1:
+      EC2Principal: ec2.amazonaws.com
+      OpsWorksPrincipal: opsworks.amazonaws.com
+    us-east-2:
+      EC2Principal: ec2.amazonaws.com
+      OpsWorksPrincipal: opsworks.amazonaws.com
+  Region2ARNPrefix:
+    us-east-1:
+      ARNPrefix: "arn:aws:"
+    us-west-1:
+      ARNPrefix: "arn:aws:"
+    us-west-2:
+      ARNPrefix: "arn:aws:"
+    us-east-2:
+      ARNPrefix: "arn:aws:"
+Resources:
+  IDE:
+    Type: AWS::Cloud9::EnvironmentEC2
+    Properties:
+      Repositories:
+        - RepositoryUrl: https://github.com/aws/aws-iot-device-sdk-python.git
+          PathComponent: workshop
+      Description: Cloud9 IDE
+      AutomaticStopTimeMinutes:
+        Ref: AutoHibernateTimeout
+      SubnetId:
+        Ref: SubnetIdentifier
+      InstanceType:
+        Ref: InstanceType
+      Name:
+        Ref: AWS::StackName
+  IoTDevice:
+    Type: AWS::IoT::Thing
+    Properties:
+      ThingName: !Ref DeviceName
+  IoTDeviceCertificate:
+    Type: AWS::IoT::Certificate
+    Properties:
+      CertificateSigningRequest: >-
+        -----BEGIN CERTIFICATE REQUEST-----
+        <<--ADD YOUR OWN-->>
+        -----END CERTIFICATE REQUEST-----
+      Status: ACTIVE
+  IoTPrincipalAttachment:
+    DependsOn: IoTDevice
+    Type: AWS::IoT::ThingPrincipalAttachment
+    Properties:
+      Principal: !GetAtt IoTDeviceCertificate.Arn
+      ThingName: !Ref DeviceName
+  IoTDevicePolicy:
+    Type: AWS::IoT::Policy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: iot:*
+            Resource: "*"
+  IoTDevicePolicyPrincipalAttachment:
+    Type: AWS::IoT::PolicyPrincipalAttachment
+    Properties:
+      PolicyName: !Ref IoTDevicePolicy
+      Principal: !GetAtt IoTDeviceCertificate.Arn
+Outputs:
+  IoTCertificateId:
+    Description: Id of the X.509 Certificate created for the IoT device
+    Value: !Ref IoTDeviceCertificate
+  DeviceName:
+    Description: Name of the IoT device created
+    Value: !Ref IoTDevice

@@ -1,0 +1,84 @@
+# lab1.txt
+#
+# Copyright 2018-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this
+# software and associated documentation files (the "Software"), to deal in the Software
+# without restriction, including without limitation the rights to use, copy, modify,
+# merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+# PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+# ------------------------------------------
+# SETUP
+# ------------------------------------------
+
+# all the files will be in iotlab
+
+# prep Cloud9 environment
+#sudo pip install --upgrade pip
+pip-3.6 install --user httpie AWSIoTPythonSDK
+sudo yum install -y jq
+echo [default] > ~/.aws/config
+echo region=us-west-2 >> ~/.aws/config
+#mkdir iotlab
+
+# install the AWS IoT SDK for Python for access to its samples, in particular 'samples/ThingShadowEcho/ThingShadowEcho.py'
+cd ~/environment
+git clone https://github.com/aws/aws-iot-device-sdk-python.git
+
+# what we'll call this device
+# CHANGE THIS LINE TO YOUR NAME AND FAV COLOR
+THING_NAME=LastNameFavoriteColor
+
+
+# ------------------------------------------
+# LAB 1 - Device Connectivitiy
+# ------------------------------------------
+
+# find out what AWS endpoint we'll connect to
+# can also see on the console at: https://us-west-2.console.aws.amazon.com/iot/home?region=us-west-2#/settings
+aws iot describe-endpoint --endpoint-type iot:Data-ATS | tee endpoint-setup.out
+
+# download the Amazon root certificate, used to validate we're connecting to Amazon
+# also listed at: https://docs.aws.amazon.com/iot/latest/developerguide/managing-device-certs.html
+wget -O root-ca.pem https://www.amazontrust.com/repository/AmazonRootCA1.pem
+
+# create a new thing
+aws iot create-thing --thing-name ${THING_NAME} | tee create-thing.out
+
+# now can see on the IoT console at: https://us-west-2.console.aws.amazon.com/iot/home?region=us-west-2#/thinghub
+# alternatively these steps can be done from the console, by creating a new Thing and accepting defaults
+# then copying all the device key and certificate files to your environment
+# but we're using the CLI here so that we can see each step along the way
+
+# create a policy for the thing
+aws iot create-policy --policy-name ${THING_NAME}-Policy --policy-document '{  "Version": "2012-10-17",  "Statement": [ {  "Effect": "Allow",  "Action": "iot:*",  "Resource": "*" }  ]}' | tee create-policy.out
+
+# create private/public keys and a certificate for this thing
+aws iot create-keys-and-certificate --set-as-active --certificate-pem-outfile service-certificate.pem --public-key-outfile thing-public.key --private-key-outfile thing-private.key | tee create-certs.out
+
+# get cert arn
+CERT_ARN=$(jq -r .certificateArn < create-certs.out)
+
+# attach policy to thing and certificate
+aws iot attach-principal-policy --policy-name ${THING_NAME}-Policy --principal $CERT_ARN
+aws iot attach-thing-principal --thing-name ${THING_NAME} --principal $CERT_ARN
+
+# view principles
+aws iot list-thing-principals --thing-name ${THING_NAME}
+aws iot list-principal-policies --principal $CERT_ARN
+
+# get the endpoint
+IOT_ENDPOINT=$(jq -r .endpointAddress < endpoint-setup.out)
+
+# test connection
+#SCRIPT=~/environment/aws-iot-device-sdk-python/samples/basicPubSub/basicPubSub.py
+SCRIPT=./labBasicPubSub.py
+python3 ${SCRIPT} -e $IOT_ENDPOINT -r ./root-ca.pem  -c ./service-certificate.pem  -k ./thing-private.key -id ${THING_NAME} -t aws-iot-core-workshop-telemetry
