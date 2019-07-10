@@ -50,6 +50,8 @@ Resources:
     Type: AWS::Cloud9::EnvironmentEC2
     Properties:
       Repositories:
+        - RepositoryUrl: https://github.com/aws-samples/aws-iot-core-workshop.git
+          PathComponent: workshop
         - RepositoryUrl: https://github.com/aws/aws-iot-device-sdk-python.git
           PathComponent: workshop
       Description: Cloud9 IDE
