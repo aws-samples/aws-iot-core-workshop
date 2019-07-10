@@ -21,6 +21,8 @@
 # CHANGE THIS LINE TO YOUR NAME AND FAV COLOR
 THING_NAME=LastNameFavoriteColor
 
+# let’s work in our workshop folder
+cd ~/environment/aws-iot-core-workshop
 
 # ------------------------------------------
 # LAB 2 - SNS Topic and Subscription
@@ -33,7 +35,8 @@ aws sns create-topic --name ${THING_NAME}-Dashboard-Update | tee sns-topic-creat
 SNS_ARN=$(jq -r .TopicArn < sns-topic-create.out)
 
 # create a new subscription
-aws sns subscribe --topic-arn $SNS_ARN --protocol https --notification-endpoint https://3kzk220j0j.execute-api.us-west-2.amazonaws.com/default/reinvent-iot-thing
+NOTIFICATION_ENDPOINT="IT'S IN YOUR LAB 2 ACTIVITY GUIDE"
+aws sns subscribe --topic-arn $SNS_ARN --protocol https --notification-endpoint ${NOTIFICATION_ENDPOINT}
 
 # check your subscription
 aws sns list-subscriptions-by-topic --topic-arn $SNS_ARN

@@ -21,6 +21,18 @@
 # CHANGE THIS LINE TO YOUR NAME AND FAV COLOR
 THING_NAME=LastNameFavoriteColor
 
+# let’s work in our workshop folder
+cd ~/environment/aws-iot-core-workshop
+
+# Note: while in Cloud9 you may not have sufficient privileges to delete resources
+# See https://docs.aws.amazon.com/cloud9/latest/user-guide/auth-and-access-control.html#auth-and-access-control-temporary-managed-credentials
+# Also see https://gist.github.com/noahcoad/2cc1b251a7adf4240ae26a534f12b9b1#create-a-cloud9-development-environment
+
+# lab 5
+# clean up via AWS Console
+
+# lab 4
+# clean up via AWS Console
 
 # lab 3
 aws iot delete-topic-rule --rule-name ${THING_NAME}_Dashboard_Connect

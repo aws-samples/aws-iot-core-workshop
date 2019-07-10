@@ -5,9 +5,6 @@ Getting Started with AWS IoT Core
 
 This sample code is made available under the MIT-0 license. See the LICENSE file.
 
-## Directions for the Workshop
-See <S3URL> for the presentation and activity guides for this Workshop.
-
 Made with excitement and passion by our AWS Professional Services teams in Atlanta, NY, and Seattle.
 
 Work Hard. Have Fun. Make History!
