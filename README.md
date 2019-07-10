@@ -1,4 +1,4 @@
-## AWS Iot Core Workshop
+## AWS IoT Core Workshop
 Getting Started with AWS IoT Core
 
 ## License Summary
@@ -11,4 +11,5 @@ See <S3URL> for the presentation and activity guides for this Workshop.
 Made with excitement and passion by our AWS Professional Services teams in Atlanta, NY, and Seattle.
 
 Work Hard. Have Fun. Make History!
-/AWS ProServe
+
+/AWS ProServe Team
