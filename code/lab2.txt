@@ -22,7 +22,7 @@
 THING_NAME=LastNameFavoriteColor
 
 # let’s work in our workshop folder
-cd ~/environment/aws-iot-core-workshop
+cd ~/environment/aws-iot-core-workshop/code
 
 # ------------------------------------------
 # LAB 2 - SNS Topic and Subscription
@@ -39,4 +39,5 @@ NOTIFICATION_ENDPOINT="IT'S IN YOUR LAB 2 ACTIVITY GUIDE"
 aws sns subscribe --topic-arn $SNS_ARN --protocol https --notification-endpoint ${NOTIFICATION_ENDPOINT}
 
 # check your subscription
+# if you see “PendingConfirmation,” continue on; it will get confirmed by https host in background
 aws sns list-subscriptions-by-topic --topic-arn $SNS_ARN

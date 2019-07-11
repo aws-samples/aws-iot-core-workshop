@@ -22,7 +22,7 @@
 THING_NAME=LastNameFavoriteColor
 
 # let’s work in our workshop folder
-cd ~/environment/aws-iot-core-workshop
+cd ~/environment/aws-iot-core-workshop/code
 
 # get iot endpoint
 IOT_ENDPOINT=$(jq -r .endpointAddress < endpoint-setup.out)

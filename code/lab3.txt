@@ -22,7 +22,7 @@
 THING_NAME=LastNameFavoriteColor
 
 # let’s work in our workshop folder
-cd ~/environment/aws-iot-core-workshop
+cd ~/environment/aws-iot-core-workshop/code
 
 # ------------------------------------------
 # LAB 3 - IoT Rules Setup
