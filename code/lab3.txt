@@ -18,7 +18,9 @@
 # prerequisite is to have run lab2.txt instructions first
 
 # From lab2.txt ... don't need to repeat unless coming back into a new terminal window since lab1
+
 # CHANGE THIS LINE TO YOUR NAME AND FAV COLOR
+
 THING_NAME=LastNameFavoriteColor
 
 # let’s work in our workshop folder
@@ -56,7 +58,7 @@ echo ${SNS_ARN}
 RULE_NAME=${THING_NAME}_Dashboard_Update
 TOPIC_RULE_PAYLOAD=$(cat <<EOR1
 {
-    "sql": "SELECT * FROM '\$aws/events/presence/connected/${THING_NAME}'",
+    "sql": "SELECT * FROM '\$aws/events/presence/connected/+'",
     "description": "This rule will look for connect messages on the lifecycle of your thing.",
     "ruleDisabled": false,
     "awsIotSqlVersion": "2016-03-23",
@@ -80,7 +82,7 @@ aws iot create-topic-rule --rule-name ${RULE_NAME} --topic-rule-payload "${TOPIC
 RULE_NAME=${THING_NAME}_Shadow_Update
 TOPIC_RULE_PAYLOAD=$(cat <<EOR2
 {
-    "sql": "SELECT *, clientid() as thingName FROM '\$aws/things/${THING_NAME}/shadow/update'",
+    "sql": "SELECT *, clientid() as thingName FROM '\$aws/things/+/shadow/update'",
     "description": "This rule will look for shadow updates from your thing.",
     "ruleDisabled": false,
     "awsIotSqlVersion": "2016-03-23",

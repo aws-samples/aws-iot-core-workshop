@@ -19,7 +19,15 @@
 # SETUP
 # ------------------------------------------
 
-# all the files will be in iotlab
+# all the files will be in ~environment/aws-iot-core-workshop
+# YOU WILL HAVE ALREADY completed the following:
+# cd ~/environment
+# git clone https://github.com/aws-samples/aws-iot-core-workshop.git
+# install the AWS IoT SDK for Python for access to its samples, in particular 'samples/ThingShadowEcho/ThingShadowEcho.py'
+# cd ~/environment
+# git clone https://github.com/aws/aws-iot-device-sdk-python.git
+
+
 
 # prep Cloud9 environment
 #sudo pip install --upgrade pip
@@ -28,20 +36,14 @@ sudo yum install -y jq
 echo [default] > ~/.aws/config
 echo region=us-west-2 >> ~/.aws/config
 
-cd ~/environment
-git clone https://github.com/aws-samples/aws-iot-core-workshop.git
-git clone https://github.com/aws/aws-iot-device-sdk-python.git
-
-# let’s work in our workshop folder
-cd ~/environment/aws-iot-core-workshop/code
-
-# install the AWS IoT SDK for Python for access to its samples, in particular 'samples/ThingShadowEcho/ThingShadowEcho.py'
-cd ~/environment
-git clone https://github.com/aws/aws-iot-device-sdk-python.git
 
 # what we'll call this device
 # CHANGE THIS LINE TO YOUR NAME AND FAV COLOR
+
 THING_NAME=LastNameFavoriteColor
+
+# let’s work in our workshop folder
+cd ~/environment/aws-iot-core-workshop/code
 
 
 # ------------------------------------------

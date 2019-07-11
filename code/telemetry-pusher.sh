@@ -15,8 +15,10 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# Don't need to repeat unless coming back into a new terminal window since lab4
+# Don't need to repeat unless coming back into a new terminal window since lab4.
+
 # CHANGE THIS LINE TO YOUR NAME AND FAV COLOR
+
 THING_NAME=LastNameFavoriteColor
 
 # let’s work in our workshop folder

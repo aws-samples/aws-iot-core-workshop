@@ -18,7 +18,9 @@
 # prerequisite is to have run lab3.txt instructions first
 
 # From lab3.txt ... don't need to repeat unless coming back into a new terminal window since lab3
+
 # CHANGE THIS LINE TO YOUR NAME AND FAV COLOR
+
 THING_NAME=LastNameFavoriteColor
 
 # let’s work in our workshop folder

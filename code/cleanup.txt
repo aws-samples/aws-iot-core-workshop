@@ -18,7 +18,9 @@
 
 # optionally remove all the resources created
 # what we'll call this device
+
 # CHANGE THIS LINE TO YOUR NAME AND FAV COLOR
+
 THING_NAME=LastNameFavoriteColor
 
 # let’s work in our workshop folder
