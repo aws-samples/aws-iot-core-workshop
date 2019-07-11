@@ -19,6 +19,22 @@
 
 # From lab2.txt ... don't need to repeat unless coming back into a new terminal window since lab1
 
+# If you seek to do this via CLI, please complete the following tasks in the AWS Console:
+# 1. Create a new IAM Role
+#   a. Go to IAM Roles > New Role
+#   b. Choose the "EC2" service that will use the role > Next
+#   c. Add the "AdministratorAccess" policy > Next > Next
+#   d. Name the new role "Cloud9Admin"
+# 2. Attach the role to the EC2 instance running Cloud9
+#   a. Go to EC2
+#   b. Check the box next to the EC2 instance for your Cloud9
+#   c. Click the "Actions" button > "Instance Settings" > "Attach/Replace IAM Role"
+#   d. Choose the new "Cloud9Admin" role > Apply
+# 3. Disable Cloud9 Temporary Credentials
+#   a. From inside Cloud9, choose "AWS Cloud9" menu (top left next to File)
+#   b. "AWS SETTINGS" > "Credentials" section
+#   c. Turn Off "AWS managed temporary credentials:"
+
 # CHANGE THIS LINE TO YOUR NAME AND FAV COLOR
 
 THING_NAME=LastNameFavoriteColor
@@ -30,7 +46,29 @@ cd ~/environment/aws-iot-core-workshop/code
 # LAB 3 - IoT Rules Setup
 # ------------------------------------------
 ROLE_NAME=${THING_NAME}_SNS_ROLE
-POLICY_JSON=$(cat <<EOJ
+SNS_ARN=$(jq -r .TopicArn < sns-topic-create.out)
+echo ${SNS_ARN}
+
+PERM_POLICY_NAME="${THING_NAME}_SNS_POLICY"
+PERM_POLICY_JSON=$(cat <<EOJ1
+{
+    "Version": "2012-10-17",
+    "Statement": {
+        "Effect": "Allow",
+        "Action": "sns:Publish",
+        "Resource": "${SNS_ARN}"
+    }
+}
+EOJ1
+)
+
+RESPONSE=$(aws iam create-policy --policy-name ${PERM_POLICY_NAME} --policy-document "${PERM_POLICY_JSON}")
+echo ${RESPONSE}
+
+PERM_POLICY_ARN=$(echo ${RESPONSE} | jq -r .Policy.Arn)
+echo ${PERM_POLICY_ARN}
+
+TRUST_POLICY_JSON=$(cat <<EOJ2
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -43,16 +81,18 @@ POLICY_JSON=$(cat <<EOJ
     }
   ]
 }
-EOJ
+EOJ2
 )
-echo ${POLICY_JSON}
+echo ${TRUST_POLICY_JSON}
 
-RESPONSE=$(aws iam create-role --role-name ${ROLE_NAME} --assume-role-policy-document "${POLICY_JSON}")
+RESPONSE=$(aws iam create-role --role-name ${ROLE_NAME} --assume-role-policy-document "${TRUST_POLICY_JSON}")
 echo $RESPONSE
 ROLE_ARN=$(echo ${RESPONSE} | jq -r .Role.Arn)
+echo ${ROLE_ARN}
 
-SNS_ARN=$(jq -r .TopicArn < sns-topic-create.out)
-echo ${SNS_ARN}
+# attached policy to role
+RESPONSE=$(aws iam attach-role-policy --role-name ${ROLE_NAME} --policy-arn ${PERM_POLICY_ARN})
+echo ${RESPONSE}
 
 # dashboard update rule
 RULE_NAME=${THING_NAME}_Dashboard_Update
