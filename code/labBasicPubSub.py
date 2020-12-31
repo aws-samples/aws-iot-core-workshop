@@ -119,8 +119,13 @@ while True:
         message['message'] = random.randint(1,100)
         message['sequence'] = loopCount
         messageJson = json.dumps(message)
-        myAWSIoTMQTTClient.publish(topic, messageJson, 1)
-        if args.mode == 'publish':
-            print('Published topic %s: %s\n' % (topic, messageJson))
+        try:
+            myAWSIoTMQTTClient.publish(topic, messageJson, 1)
+        except Exception as e:
+            print(e)
+            print("Had an exception on publish.")
+        else:
+            if args.mode == 'publish':
+                print('Published topic %s: %s\n' % (topic, messageJson))
         loopCount += 1
     time.sleep(1)
